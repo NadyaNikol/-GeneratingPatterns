@@ -11,8 +11,10 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             Pizza pizza = new Pizza(new LazioRegionFactory());
-            pizza.CalculatePrice();
             Console.WriteLine(pizza);
+
+            Pizza pizza2 = new Pizza(new PugliaReionFactory());
+            Console.WriteLine(pizza2);
 
             Console.ReadKey();
         }
@@ -28,64 +30,60 @@ namespace ConsoleApp1
         public abstract List<Addon> CreateAddons();
     }
 
-    public class LazioRegionFactory : IngridientsFactory
+   
+
+
+    public class Item
     {
-        public override List<Addon> CreateAddons()
-        {
-            return new List<Addon>()
-            {
-                new Mushroom(),
-                new Seafood()
-            };
-        }
-
-        public override Base CreateBase()
-        {
-            return new XXL();
-        }
-
-        public override Cheese CreateCheese()
-        {
-            return new Mozarella();
-        }
-
-        public override Sause CreateSause()
-        {
-            return new Barbecue();
-        }
+        public double Price { get; set; }
     }
-
 
     public class Pizza
     {
         private Cheese cheese;
         private Base basee;
         private Sause sause;
-        // private List<Addon> addons;
+        private List<Addon> addons;
 
         public Pizza(IngridientsFactory IF)
         {
             cheese = IF.CreateCheese();
             basee = IF.CreateBase();
             sause = IF.CreateSause();
-
-            //for (int i = 0; i < addons.Count; i++)
-            //{
-
-            //}         
+            addons = IF.CreateAddons();        
         }
 
         public override string ToString()
         {
-            return $"Основа: {basee.GetType().Name}\n" +
-                   $"Cыр: {cheese.GetType().Name}\n" +
-                   $"Соус: {sause.GetType().Name}\n" +
-                   $"Cыр: {cheese.GetType().Name}\n";
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendLine($"Основа: {basee.GetType().Name}");
+            builder.AppendLine($"Сыр: {cheese.GetType().Name}");
+            builder.AppendLine($"Соус: {sause.GetType().Name}");
+            builder.AppendLine($"\nДобавки: ");
+
+            foreach (Addon addon in addons)
+                builder.AppendLine(addon.GetType().Name);
+
+            builder.AppendLine($"Стоимость пиццы: {CalculatePrice()}");
+
+            return builder.ToString();
         }
 
-        public void CalculatePrice()
+        private double CalculatePrice()
         {
+            double price = 0;
 
+            price += cheese.Price;
+            price += basee.Price;
+            price += sause.Price;
+
+            foreach  (Addon item in addons)
+            {
+                price += item.Price;
+            }
+
+            return price;
         }
     }
 
